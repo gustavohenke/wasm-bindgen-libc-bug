@@ -1,0 +1,39 @@
+diff --git a/cmake/Modules/Platform/Emscripten.cmake b/cmake/Modules/Platform/Emscripten.cmake
+index 0284977bf..c9dd69afe 100644
+--- a/cmake/Modules/Platform/Emscripten.cmake
++++ b/cmake/Modules/Platform/Emscripten.cmake
+@@ -220,7 +220,7 @@ list(APPEND CMAKE_SYSTEM_PREFIX_PATH /)
+ if ($ENV{CFLAGS} MATCHES "MEMORY64")
+   set(CMAKE_LIBRARY_ARCHITECTURE "wasm64-emscripten")
+ else()
+-  set(CMAKE_LIBRARY_ARCHITECTURE "wasm32-emscripten")
++  set(CMAKE_LIBRARY_ARCHITECTURE "wasm32-unknown-unknown")
+ endif()
+ 
+ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+diff --git a/tools/cache.py b/tools/cache.py
+index 7e0f416e6..37d665e91 100644
+--- a/tools/cache.py
++++ b/tools/cache.py
+@@ -103,7 +103,7 @@ def get_lib_dir(absolute):
+   if settings.MEMORY64:
+     path = Path(path, 'wasm64-emscripten')
+   else:
+-    path = Path(path, 'wasm32-emscripten')
++    path = Path(path, 'wasm32-unknown-unknown')
+   # if relevant, use a subdir of the cache
+   subdir = []
+   if settings.LTO:
+diff --git a/tools/system_libs.py b/tools/system_libs.py
+index 982ba20e1..e12553af8 100644
+--- a/tools/system_libs.py
++++ b/tools/system_libs.py
+@@ -1034,6 +1034,8 @@ class libc(MuslInternalLibrary,
+         '_Fork.c',
+         # 'env' exclusion
+         '__reset_tls.c', '__init_tls.c', '__libc_start_main.c', '__stack_chk_fail.c',
++        # avoids 'unknown instruction Block(Block { seq: Id { idx: 1 } })'
++        '__environ.c',
+     ]
+ 
+     ignore += LIBC_SOCKETS
